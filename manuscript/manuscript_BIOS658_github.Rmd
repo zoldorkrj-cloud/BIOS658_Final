@@ -1,0 +1,180 @@
+---
+title: "BIOS658 Final"
+author:
+- name: Ryan Zoldork
+  email: zoldorkrj@vcu.edu
+output:
+  BiocStyle::html_document
+abstract: |
+  Head and Neck Squamous Cell Carcinoma (HNSCC) is a heterogeneous group of tumors arising from the mucosal epithelium of the oral cavity, pharynx, and larynx. HNSCC is typically stratified by the presence of Human Papilloma Virus (HPV). Patients with HPV + HNSCC have a better prognosis than HPV - patients.  This analysis aims to identify differentially expressed genes (DEGs) between HPV-positive and HPV-negative HNSCC samples using RNA-seq data from NCBI GEO (GSE72536). We performed quality assessment, preprocessing, batch effect correction, differential expression analysis, and functional enrichment analysis to elucidate the molecular differences associated with HPV status in HNSCC. We identified Genes like SYCP2, STAG3, TEX15, ZNF541, and ZPBP2 are significantly upregulated in HPV + tumors. GO and KEGG enrichment analyses revealed significant enrichment in immune-related processes and pathways.These findings suggest HPV-associated HNSCC mounts a more robust immune response compared to HPV - HNSCC. The molecular interactions behind this can be explored in the future and may inform future therapeutic strategies. 
+vignette: |
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: References.bib
+
+---
+
+# Introduction
+
+  Head and neck squamous cell carcinoma (HNSCC) is a heterogenous group of tumors at many anatomical sites in the oral cavity, pharynx and larynx originating from mucosal epithelium [@Ferlay2019]. HNSCC is the 6th most common cancer worldwide, with a median diagnosis of 66 years, and represents ~90% of head and neck cancers [@NatureHNSCC2020]. HNSCC accounts for more than 600,000 new cases and 350,000 deaths annually. Tobacco smoking, alcohol use, and areca nuts are major risk factors in developing HNSCC. Cancer arising in the oral cavity or larynx are typically associated with tobacco and alcohol use, whereas Oropharyngeal tumors- affecting the tonsil, back 1/3 of the tongue, and throat- are almost always HPV positive. HPV positive HNSCC is associated with high-risk HPV subtypes, namely HPV16, and is associated with better outcomes when compared to HPV negative HNSCC [@Michaud2014]. 
+
+  The different anatomical site and etiology of HPV positive and negative HNSCC suggest that these two diseases have different molecular characteristics. Understanding the molecular differences between HPV positive and negative HNSCC is crucial for developing targeted therapies and improving patient outcomes.This analysis aims to identify differentially expressed genes (DEGs) between HPV positive and HPV negative HNSCC samples using RNA-seq data from NCBI GEO.The data set from Wood, O, et al. (GSE72536) and the manuscript "Gene expression analysis of TIL rich HPV driven head and neck tumors reveals a distinct B-cell signature when compared to HPV independent tumours" was used [@Wood2016]. Here, we performed quality assessment, preprocessing, batch effect correction, differential expression analysis, and functional enrichment analysis to elucidate the molecular differences associated with HPV status in HNSCC.
+
+# Methods
+
+**Quality assessment**
+
+Raw counts were inspected for library size, count distribution, sample correlation, and principal components. Library sizes were computed as column sums of the raw count matrix and visualized with a barplot. Per‑sample count distributions were visualized as log2‑CPM density plots and boxplots. Sample–sample Pearson correlations were computed on log2‑CPM and displayed as a heatmap. Principal component analysis (PCA) was performed on the top variable genes (top 20% by variance) and plotted to inspect sample clustering and potential confounders.
+
+**Preprocessing**
+
+Genes with low expression were filtered using edgeR::filterByExpr() [@Robinson2010] to retain genes with sufficient counts for statistical testing. TMM normalization was applied with edgeR::calcNormFactors(). For visualization, log2‑CPM with a prior count of 1 was used. Gene identifiers were mapped to Entrez IDs using AnnotationDbi::mapIds(org.Hs.eg.db)[@AnnotationDbi2019]
+
+**Batch effect correction**
+
+Batch variables were unknown so surrogate variables were estimated with sva::svaseq()[@Leek2007] and included surrogate variables in the differential expression model; surrogate variables were also regressed out  for visualization. PCA plots and hierarchical clustering (top 10% most variable genes) are shown before and after correction.
+
+**Differential expression analysis**
+
+Differential expression was performed with edgeR [@Robinson2010] using a generalized linear model. The design matrix included the primary factor (HPV status) and surrogate variables estimated by SVA [@Leek2007]. Dispersion was estimated with estimateDisp(), models were fit with glmFit(), and tests were performed with glmLRT(). P‑values were adjusted for multiple testing using the Benjamini–Hochberg procedure. Genes with FDR < 0.05 and |log2FC| ≥ 1 were considered significant. Top differentially expressed genes and boxplots for the top 10 genes are shown.
+
+**Functional enrichment analysis**
+
+Gene Ontology enrichment (BP, MF, CC) and KEGG pathway enrichment were performed using clusterProfiler [@Yu2012]. Over‑representation analysis (ORA) used enrichGO/enrichKEGG on the set of significant genes (FDR < 0.05, |log2FC| ≥ 1) with the tested gene universe defined as all mapped Entrez IDs. Gene set enrichment analysis (GSEA) used a ranked gene list by logFC and FDR. Multiple testing correction used Benjamini–Hochberg; terms with adjusted p < 0.05 were reported. KEGG queries used the KEGG REST API. Visualizations include dotplots and pathview [@Luo2013] for KEGG pathway diagram.
+
+
+# Results
+
+
+## Figure 1. Quality assessment of RNA-seq data
+
+First, we performed quality assessment of the RNA-seq data to ensure data integrity for downstream analysis. Figure 1a provides an overview of the BIOS658 project workflow.
+``` {r, fig.cap="Figure 1a. Overview of BIOS658 project.", echo=FALSE}
+## ----fig1a, fig.cap="Figure 1a. Overview of BIOS658 project", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/bios658.png")
+```
+Next, the library size distribution across samples was plotted to assess sequencing depth. Total counts ranged from ~7 million to ~18 million reads per sample,indicating variability in sequencing, but consistent coverage and no extreme outliers (fig 1b).
+```{r, fig.cap="Figure 1b. Library size distribution across samples.", echo=FALSE}
+## ----fig1b, fig.cap="Figure 1b. Library size distribution across samples", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/qc_library_sizes.png")
+```
+We further wanted to evaluate the expression distribution between samples. log2-CPM density and box plot showed similar, and perhaps better stabilized distributions across samples, indicating successful normalization (fig 1c, 1d).
+``` {r, fig.cap="Figure 1c. Log2-CPM density plot across samples.", echo=FALSE}
+## ----fig1c, fig.cap="Figure 1c. Log2-CPM density plot across samples", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/qc_density.png")
+```
+
+``` {r, fig.cap="Figure 1d. Log2-CPM boxplot across samples.", echo=FALSE}
+## ----fig1d, fig.cap="Figure 1d. Log2-CPM boxplot across samples", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/qc_boxplot.png")
+```
+
+Lastly, sample–sample Pearson correlation heatmap revealed high correlation coefficients, confirming data integrity. Furthermore, no obvious outliers or unexpected batch clustering.
+``` {r, fig.cap="Figure 1e. Sample–sample correlation heatmap.", echo=FALSE}
+## ----fig1e, fig.cap="Figure 1e. Sample–sample correlation heatmap", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/qc_correlation_heatmap.png")
+
+```
+
+## Figure 2. Batch effect correction and hierarchical clustering
+
+Principal component analysis (PCA) and hierarchical clustering were performed to assess batch effects and sample clustering based on HPV status. First, PCA plots before and after batch effect correction are shown in Figure 2a and 2b, respectively. Before correction, samples clustered primarily by HPV status, indicating that biological variation was the dominant source of variation. After SVA correction, the clustering pattern remained similar, suggesting that batch effects were minimal and did not confound the biological signal.
+```{r small, fig.cap="Small figure. A plot produced by a code chunk with option `fig.small = TRUE`.", fig.small=TRUE, echo=FALSE}
+## ----fig2, fig.cap="Figure 2. Batch effect correction and hierarchical clustering", out.width="100%", fig.align="center"----
+```
+
+``` {r, fig.cap="Figure 2a. PCA plot before batch correction.", echo=FALSE}
+## ----fig2a, fig.cap="Figure 2a. PCA plot before batch correction", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/pca_before_batch.png")
+```
+
+``` {r, fig.cap="Figure 2b. PCA plot after batch correction.", echo=FALSE}
+## ----fig2b, fig.cap="Figure 2b. PCA plot after batch correction", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/pca_after_batch.png")
+```
+
+Likewise, We next performed hierarchical clustering using the top 10% most variable genes to further assess sample relationships. Before batch effect correction, samples clustered mainly by HPV status (Figure 2c). After SVA correction, the clustering pattern remained consistent (Figure 2d), reinforcing that HPV status was the primary driver of sample variation rather than batch effects.
+``` {r, fig.cap="Figure 2c. Hierarchical clustering before correction.", echo=FALSE}
+## ----fig2c, fig.cap="Figure 2c. Hierarchical clustering before correction", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/hc_before_correction.png")
+```
+
+``` {r, fig.cap="Figure 2d. Hierarchical clustering after correction.", echo=FALSE}
+## ----fig2d, fig.cap="Figure 2d. Hierarchical clustering after correction", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/hc_after_correction.png")
+```
+
+## Figure 3. Differential expression analysis results
+```{r, fig.cap="Wide figure. A plot produced by a code chunk with option `fig.wide = TRUE`.", fig.wide=TRUE, echo=FALSE}
+## ----fig3, fig.cap="Figure 3. Differential expression analysis results", out.width="100%", fig.align="center"----
+```
+After successful Quality assurance and batch correction, we performed differential expression analysis using edgeR to identify genes differentially expressed between HPV positive and negative samples. The MA plot (Figure 3a) illustrates the overall distribution of log2 fold changes versus average expression, highlighting significantly upregulated and downregulated genes, spanning a wide range of expression levels. This provides evidence that both highly and moderately expressed genes contribute to HPV +/- related expression profiles. 
+``` {r, fig.cap="Figure 3a. MA plot of differential expression.", echo=FALSE}
+## ----fig3a, fig.cap="Figure 3a. MA plot of differential expression", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/edgeR_MAplot.png")
+```
+A heatmap of the top 50 differentially expressed genes (Figure 3b) shows distinct expression patterns between HPV positive and negative samples, indicating clear separation based on HPV status. 
+``` {r, fig.cap="Figure 3b. Heatmap of top 50 DE genes.", echo=FALSE}
+## ----fig3b, fig.cap="Figure 3b. Heatmap of top 50 DE genes", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/edgeR_heatmap_top50.png")
+```
+The volcano plot (Figure 3c) visualizes the relationship between log2 fold changes and statistical significance, with several genes exhibiting both high fold changes and low p-values. Genes like SYCP2, STAG3, TEX15, ZNF541, and ZPBP2 are significantly upregulated in HPV + tumors. Genes like ADIPOQ,SHISA6, PPP1R14C, KLC1, and CFAP262 are significantly downregulated in HPV + tumors. This indicates that HPV + tumors have a distinct transcriptional profile compared to HPV - tumors, with many genes related to immune modulation.
+``` {r, fig.cap="Figure 3c. Volcano plot of DE results.", echo=FALSE}
+## ----fig3c, fig.cap="Figure 3c. Volcano plot of DE results", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/edgeR_volcano_symbol.png")
+```
+Next, boxplots of the top 10 differentially expressed genes (Figure 3d) demonstrate consistent expression differences between the two groups. Most genes have higher expression in HPV + tumors, but with SHISA6 notably lower in HPV + tumors. This plot further validating the differential expression results.
+``` {r, fig.cap="Figure 3d. Boxplots of top 10 DE genes.", echo=FALSE}
+## ----fig3d, fig.cap="Figure 3d. Boxplots of top 10 DE genes", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/edgeR_top10_boxplots_with_entrez.png")
+```
+
+## Figure 4. Functional enrichment analysis results
+```{r, fig.cap="Wide figure. A plot produced by a code chunk with option `fig.wide = TRUE`.", fig.wide=TRUE, echo=FALSE}
+## ----fig4a, fig.cap="Figure 4a. GO Biological Process enrichment (ORA)", out.width="100%", fig.align="center"----
+```
+
+To further interpret the biological significance of the differentially expressed genes, we performed functional enrichment analysis using over-representation analysis (ORA) for Gene Ontology (GO) terms and KEGG pathways. First, GO Biological Process enrichment results (Figure 4a) revealed significant enrichment in immune-related processes, such as Leukocyte cell-cell adhesion, regulation of lymphocyte activation, lymphocyte proliferation, and Immune receptor signaling. This suggests that HPV positive tumors may have a more active immune microenvironment compared to HPV negative tumors.
+``` {r, fig.cap="Figure 4a. GO Biological Process enrichment .", echo=FALSE}
+knitr::include_graphics("data/ORA_GO_BP.png")
+```
+We also performed GO Molecular Function enrichment analysis (Figure 4b) and GO Cellular Component Enrichment (4c). Molecular function enrichment highlighted terms related to immune functions, including GTPase regulator activity, cytokine receptor activity, MHC protein complex binding, and SH3 domain binding. This indicates an active role of immune signaling and regulation in HPV positive tumors. The Cellular Component enrichment analysis (Figure 4c) further supported these findings, with significant terms including external side of plasma membrane, immunological synapse, and collagen-containing extracellular matrix.These results not only point towards a direct immune involvement, but also suggest extracellular remodeling in HPV positive tumors.
+``` {r, fig.cap="Figure 4b. GO Molecular Function enrichment (ORA).", echo=FALSE}
+## ----fig4b, fig.cap="Figure 4b. GO Molecular Function enrichment (ORA)", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/ORA_GO_MF.png")
+```
+
+``` {r, fig.cap="Figure 4c. GO Cellular Component enrichment (ORA).", echo=FALSE}
+## ----fig4c, fig.cap="Figure 4c. GO Cellular Component enrichment (ORA)", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/ORA_GO_CC.png")
+```
+Lastly, KEGG pathway enrichment analysis (Figure 4d) was performed and identified multiple top pathways related to immune responses, including Cytokine-cytokine interaction, Cell adhesion molecules (CAMs), NK cell mediated cytotoxicity, Th17/Th1/Th2 cell differentiation and antigen presentation. These findings further emphasize the prominent role of immune processes in distinguishing HPV positive from HPV negative HNSCC tumors.
+``` {r, fig.cap="Figure 4d. KEGG pathway enrichment (ORA).", echo=FALSE}
+## ----fig4d, fig.cap="Figure 4d. KEGG pathway enrichment (ORA)", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/ORA_KEGG.png")
+```
+
+## Figure 5. KEGG pathway map 
+To visualize the biological involvement of the differentially expressed genes, we generated a KEGG pathway map.KEGG ORA identified antigen processing and presentation as differentially expressed in HPV+ HNSCC. Viruses are well known to alter MHC and antigen presentation as an immune evasion mechanism.Figure 5 shows the KEGG pathway map for Antigen processing and presentation (hsa04612).The KEGG pathway reveals upregulation of MHC l presentation to CD8+ T cells via TAP1/2, as well as MHC II presentation to CD4+ T cells via HLA-DM and HLA-DO. There are many explanations for these findings. The simplest is that with the presence of viral antigens, there is increased antigen presentation to T cells. Another possibility is that antigen presentation is enhanced in HPV+ cancer.
+``` {r, fig.cap="Figure 5. KEGG pathway map (Antigen processing and presentation, hsa04612).", echo=FALSE}
+## ----fig5, fig.cap="Figure 5. KEGG pathway map (Pathways in cancer, hsa05200)", out.width="100%", fig.align="center"----
+knitr::include_graphics("data/hsa04612.HPV_DE.png")
+
+```
+
+# Discussion
+
+In this study, we analyzed RNA-seq data from HPV positive and negative head and neck squamous cell carcinoma (HNSCC) samples to identify differentially expressed genes (DEGs) associated with HPV status. Quality assessment confirmed data integrity. Bar graphs and box plots of library size and log2-CPM were performed and revealed relatively uniform counts. There was a range of ~ 10 million counts between the high and low samples, but no outliers were detected. This is expected as the NCBI GEO data set GSE72536 was already filtered by the authors prior to uploading. The authors exluded 16 samples in the original study (39 HNSCC samples down to 23 samples), selecting for TIL-rich tumors.This could explain any differences in results, due to a second layer of quality control. Nonetheless, samples were originally selected to be immune rich, and as expected, we see an increase in immune-related GO terms after GO analysis.Next, we assessed batch effects using PCA and hierarchical clustering. In this analysis, PCA plots before and after batch effect correction were performed as part of a standard pipeline. Before SVA correction, the PCA plot (Figure 2a) showed strong clustering around HPV status that remained after SVA correction, indicating that HPV status was a major source of variation in the data. Hierarchical clustering (Figure 2c and 2d) further supported this, with samples clustering primarily by HPV status rather than batch. This suggests that while batch effects were present, they were minor and did not defer from the biological question.
+
+Differential expression analysis using edgeR identified a substantial number of DEGs between HPV positive and negative samples. The MA plot (Figure 3a) illustrated a clear separation of upregulated and downregulated genes across a range of expression levels. This suggest that differences between HPV + and HPV - samples are not due to a handful of highly expressed genes. The heatmap of the top 50 DEGs (Figure 3b) demonstrated distinct expression patterns between the two groups,and The volcano plot (Figure 3c) highlighted several genes with both high fold changes and statistical significance, including SYCP2, STAG3, TEX15, ZNF541, and ZPBP2 as significantly upregulated in HPV positive tumors. Boxplots of the top 10 DEGs (Figure 3d) confirmed consistent expression differences between HPV positive and negative samples.Wood et al, also showed a strong seperation of HPV+ and HPV- samples based on DEGs. They noted an immune signature enrichment in HPV+ samples, which is consistent with our findings. Despite this, there are some differences in the specific DEGs identified, likely due to differences in analysis pipelines and filtering criteria. Wood, et al. key finding was a distinct B cell signature in HPV+ tumors, which included CD200, ADAM28, BCL2, VCAM1, and STAG3. In their pipeline, they did not use SVA for batch correction, instead they added CD19,CD4 and CD8 as covariates. This could explain some of the differences in DEGs identified. Nevertheless, some of the top GO terms from our analysis align with Wood et al's findings, particularly those related to immune processes.
+
+Woods, et al. revealed distinct B cell signature in HPV+ tumors, which included CD200, ADAM28, BCL2, VCAM1, and STAG3, when TILs were corrected for. This analysis did not recreate the original paper, but provided further synergistic evidence that HPV+ tumors have a distinct immune microenvironment compared to HPV- tumors, when an additional layer of QC and filtering was applied. Together, these results highlight the connection between HPV status, Immune interaction, and better prognosis in HNSCC. Further research is required to elucidate the mechanistic links and therapeutic implications of these findings.
+
+
+# References {.unnumbered}
+
+```
+
+
+
