@@ -1,7 +1,7 @@
 ---
 title: "BIOS658 Final"
 author:
-- name: Ryan Zoldork
+- name: Ryan Zoldork - repository:zoldorkrj-cloud/BIOS658_Final
   email: zoldorkrj@vcu.edu
 output:
   BiocStyle::html_document
@@ -52,28 +52,28 @@ Gene Ontology enrichment (BP, MF, CC) and KEGG pathway enrichment were performed
 First, we performed quality assessment of the RNA-seq data to ensure data integrity for downstream analysis. Figure 1a provides an overview of the BIOS658 project workflow.
 ``` {r, fig.cap="Figure 1a. Overview of BIOS658 project.", echo=FALSE}
 ## ----fig1a, fig.cap="Figure 1a. Overview of BIOS658 project", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/bios658.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/bios658.png")
 ```
 Next, the library size distribution across samples was plotted to assess sequencing depth. Total counts ranged from ~7 million to ~18 million reads per sample,indicating variability in sequencing, but consistent coverage and no extreme outliers (fig 1b).
 ```{r, fig.cap="Figure 1b. Library size distribution across samples.", echo=FALSE}
 ## ----fig1b, fig.cap="Figure 1b. Library size distribution across samples", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/qc_library_sizes.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/qc_library_sizes.png")
 ```
 We further wanted to evaluate the expression distribution between samples. log2-CPM density and box plot showed similar, and perhaps better stabilized distributions across samples, indicating successful normalization (fig 1c, 1d).
 ``` {r, fig.cap="Figure 1c. Log2-CPM density plot across samples.", echo=FALSE}
 ## ----fig1c, fig.cap="Figure 1c. Log2-CPM density plot across samples", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/qc_density.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/qc_density.png")
 ```
 
 ``` {r, fig.cap="Figure 1d. Log2-CPM boxplot across samples.", echo=FALSE}
 ## ----fig1d, fig.cap="Figure 1d. Log2-CPM boxplot across samples", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/qc_boxplot.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/qc_boxplot.png")
 ```
 
 Lastly, sample–sample Pearson correlation heatmap revealed high correlation coefficients, confirming data integrity. Furthermore, no obvious outliers or unexpected batch clustering.
 ``` {r, fig.cap="Figure 1e. Sample–sample correlation heatmap.", echo=FALSE}
 ## ----fig1e, fig.cap="Figure 1e. Sample–sample correlation heatmap", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/qc_correlation_heatmap.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/qc_correlation_heatmap.png")
 
 ```
 
@@ -86,23 +86,23 @@ Principal component analysis (PCA) and hierarchical clustering were performed to
 
 ``` {r, fig.cap="Figure 2a. PCA plot before batch correction.", echo=FALSE}
 ## ----fig2a, fig.cap="Figure 2a. PCA plot before batch correction", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/pca_before_batch.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/pca_before_batch.png")
 ```
 
 ``` {r, fig.cap="Figure 2b. PCA plot after batch correction.", echo=FALSE}
 ## ----fig2b, fig.cap="Figure 2b. PCA plot after batch correction", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/pca_after_batch.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/pca_after_batch.png")
 ```
 
 Likewise, We next performed hierarchical clustering using the top 10% most variable genes to further assess sample relationships. Before batch effect correction, samples clustered mainly by HPV status (Figure 2c). After SVA correction, the clustering pattern remained consistent (Figure 2d), reinforcing that HPV status was the primary driver of sample variation rather than batch effects.
 ``` {r, fig.cap="Figure 2c. Hierarchical clustering before correction.", echo=FALSE}
 ## ----fig2c, fig.cap="Figure 2c. Hierarchical clustering before correction", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/hc_before_correction.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/hc_before_correction.png")
 ```
 
 ``` {r, fig.cap="Figure 2d. Hierarchical clustering after correction.", echo=FALSE}
 ## ----fig2d, fig.cap="Figure 2d. Hierarchical clustering after correction", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/hc_after_correction.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/hc_after_correction.png")
 ```
 
 ## Figure 3. Differential expression analysis results
@@ -112,22 +112,22 @@ knitr::include_graphics("data/hc_after_correction.png")
 After successful Quality assurance and batch correction, we performed differential expression analysis using edgeR to identify genes differentially expressed between HPV positive and negative samples. The MA plot (Figure 3a) illustrates the overall distribution of log2 fold changes versus average expression, highlighting significantly upregulated and downregulated genes, spanning a wide range of expression levels. This provides evidence that both highly and moderately expressed genes contribute to HPV +/- related expression profiles. 
 ``` {r, fig.cap="Figure 3a. MA plot of differential expression.", echo=FALSE}
 ## ----fig3a, fig.cap="Figure 3a. MA plot of differential expression", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/edgeR_MAplot.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/edgeR_MAplot.png")
 ```
 A heatmap of the top 50 differentially expressed genes (Figure 3b) shows distinct expression patterns between HPV positive and negative samples, indicating clear separation based on HPV status. 
 ``` {r, fig.cap="Figure 3b. Heatmap of top 50 DE genes.", echo=FALSE}
 ## ----fig3b, fig.cap="Figure 3b. Heatmap of top 50 DE genes", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/edgeR_heatmap_top50.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/edgeR_heatmap_top50.png")
 ```
 The volcano plot (Figure 3c) visualizes the relationship between log2 fold changes and statistical significance, with several genes exhibiting both high fold changes and low p-values. Genes like SYCP2, STAG3, TEX15, ZNF541, and ZPBP2 are significantly upregulated in HPV + tumors. Genes like ADIPOQ,SHISA6, PPP1R14C, KLC1, and CFAP262 are significantly downregulated in HPV + tumors. This indicates that HPV + tumors have a distinct transcriptional profile compared to HPV - tumors, with many genes related to immune modulation.
 ``` {r, fig.cap="Figure 3c. Volcano plot of DE results.", echo=FALSE}
 ## ----fig3c, fig.cap="Figure 3c. Volcano plot of DE results", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/edgeR_volcano_symbol.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/edgeR_volcano_symbol.png")
 ```
 Next, boxplots of the top 10 differentially expressed genes (Figure 3d) demonstrate consistent expression differences between the two groups. Most genes have higher expression in HPV + tumors, but with SHISA6 notably lower in HPV + tumors. This plot further validating the differential expression results.
 ``` {r, fig.cap="Figure 3d. Boxplots of top 10 DE genes.", echo=FALSE}
 ## ----fig3d, fig.cap="Figure 3d. Boxplots of top 10 DE genes", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/edgeR_top10_boxplots_with_entrez.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/edgeR_top10_boxplots_with_entrez.png")
 ```
 
 ## Figure 4. Functional enrichment analysis results
@@ -137,29 +137,29 @@ knitr::include_graphics("data/edgeR_top10_boxplots_with_entrez.png")
 
 To further interpret the biological significance of the differentially expressed genes, we performed functional enrichment analysis using over-representation analysis (ORA) for Gene Ontology (GO) terms and KEGG pathways. First, GO Biological Process enrichment results (Figure 4a) revealed significant enrichment in immune-related processes, such as Leukocyte cell-cell adhesion, regulation of lymphocyte activation, lymphocyte proliferation, and Immune receptor signaling. This suggests that HPV positive tumors may have a more active immune microenvironment compared to HPV negative tumors.
 ``` {r, fig.cap="Figure 4a. GO Biological Process enrichment .", echo=FALSE}
-knitr::include_graphics("data/ORA_GO_BP.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/ORA_GO_BP.png")
 ```
 We also performed GO Molecular Function enrichment analysis (Figure 4b) and GO Cellular Component Enrichment (4c). Molecular function enrichment highlighted terms related to immune functions, including GTPase regulator activity, cytokine receptor activity, MHC protein complex binding, and SH3 domain binding. This indicates an active role of immune signaling and regulation in HPV positive tumors. The Cellular Component enrichment analysis (Figure 4c) further supported these findings, with significant terms including external side of plasma membrane, immunological synapse, and collagen-containing extracellular matrix.These results not only point towards a direct immune involvement, but also suggest extracellular remodeling in HPV positive tumors.
 ``` {r, fig.cap="Figure 4b. GO Molecular Function enrichment (ORA).", echo=FALSE}
 ## ----fig4b, fig.cap="Figure 4b. GO Molecular Function enrichment (ORA)", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/ORA_GO_MF.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/ORA_GO_MF.png")
 ```
 
 ``` {r, fig.cap="Figure 4c. GO Cellular Component enrichment (ORA).", echo=FALSE}
 ## ----fig4c, fig.cap="Figure 4c. GO Cellular Component enrichment (ORA)", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/ORA_GO_CC.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/ORA_GO_CC.png")
 ```
 Lastly, KEGG pathway enrichment analysis (Figure 4d) was performed and identified multiple top pathways related to immune responses, including Cytokine-cytokine interaction, Cell adhesion molecules (CAMs), NK cell mediated cytotoxicity, Th17/Th1/Th2 cell differentiation and antigen presentation. These findings further emphasize the prominent role of immune processes in distinguishing HPV positive from HPV negative HNSCC tumors.
 ``` {r, fig.cap="Figure 4d. KEGG pathway enrichment (ORA).", echo=FALSE}
 ## ----fig4d, fig.cap="Figure 4d. KEGG pathway enrichment (ORA)", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/ORA_KEGG.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/ORA_KEGG.png")
 ```
 
 ## Figure 5. KEGG pathway map 
 To visualize the biological involvement of the differentially expressed genes, we generated a KEGG pathway map.KEGG ORA identified antigen processing and presentation as differentially expressed in HPV+ HNSCC. Viruses are well known to alter MHC and antigen presentation as an immune evasion mechanism.Figure 5 shows the KEGG pathway map for Antigen processing and presentation (hsa04612).The KEGG pathway reveals upregulation of MHC l presentation to CD8+ T cells via TAP1/2, as well as MHC II presentation to CD4+ T cells via HLA-DM and HLA-DO. There are many explanations for these findings. The simplest is that with the presence of viral antigens, there is increased antigen presentation to T cells. Another possibility is that antigen presentation is enhanced in HPV+ cancer.
 ``` {r, fig.cap="Figure 5. KEGG pathway map (Antigen processing and presentation, hsa04612).", echo=FALSE}
 ## ----fig5, fig.cap="Figure 5. KEGG pathway map (Pathways in cancer, hsa05200)", out.width="100%", fig.align="center"----
-knitr::include_graphics("data/hsa04612.HPV_DE.png")
+knitr::include_graphics("C:/Users/ryanz/OneDrive/Desktop/Genomics_Final/data/hsa04612.HPV_DE.png")
 
 ```
 
