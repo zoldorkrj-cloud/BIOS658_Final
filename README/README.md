@@ -2,6 +2,16 @@
 
 
 ---
+## How to get started
+
+**Clone the repository**
+
+From your terminal or GitHub Desktop: git clone https://github.com/zoldorkrj-cloud/BIOS658_Final.git
+
+**Open the RStudio project**
+
+Navigate into the cloned folder BIOS658_Final/.
+Open the file BIOS658_Final.Rproj in RStudio. This sets the working directory to the repo root so all relative paths resolve correctly.
 
 ## 1. `01_quality_assessment.R`
 
